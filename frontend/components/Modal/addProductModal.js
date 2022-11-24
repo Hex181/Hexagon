@@ -12,10 +12,20 @@ import {
 } from "@chakra-ui/react";
 import { useState } from "react";
 import TextInput from "../TextInputs/TextInput";
+import { Web3Storage } from 'web3.storage/dist/bundle.esm.min.js';
 
 const AddProdcutModal = ({ isOpen, onClose, header, handleProceed, children }) => {
   const [productName, setProductName] = useState('');
   const [productDesc, setProductDesc] = useState('');
+  const [productDocument, setProductDocument] = useState();
+
+  // Upload a file to ipfs and return the cid
+  const uploadDocument = () => {
+    const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweDVBQzdkNzllM0JkYjZFRTA2YTEyOTM5NzFEM2VDMTdGM2VEMDY1NTAiLCJpc3MiOiJ3ZWIzLXN0b3JhZ2UiLCJpYXQiOjE2NjA1NzI3ODUyMzIsIm5hbWUiOiJFbmxpZ2h0ZW4ifQ.5J8VraV5Jd0jia6I8AvDxSTB0oNiNbq-r470OXUMKMQ";
+    const storage = new Web3Storage({ token })
+    const cid = storage.put(productDocument);
+    return cid;
+  }
   return (
     <>
       <Modal isOpen={isOpen} onClose={onClose} size="xl">
@@ -24,7 +34,7 @@ const AddProdcutModal = ({ isOpen, onClose, header, handleProceed, children }) =
           <ModalHeader>{header}</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-          <form>
+            <form>
               <TextInput
                 label="Product Name"
                 placeholder="Enter product name"

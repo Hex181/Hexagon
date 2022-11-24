@@ -14,8 +14,9 @@ import UserContext from "../context/User";
 
 const AppRoute = ({ isSignedIn, contractId, wallet }) => {
   const user = { isSignedIn, wallet, contractId };
-
-  wallet.viewMethod({ contractId, method: "is_manufacturer", args: { account_id: wallet.account_id } }).then((res) => user.isManufacturer = res);
+  if (user.isSignedIn) {
+    wallet.viewMethod({ contractId, method: "is_manufacturer", args: { account_id: wallet.account_id } }).then((res) => user.isManufacturer = res);
+  }
 
   return render(
     <BrowserRouter>
