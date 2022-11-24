@@ -1,5 +1,6 @@
 import { Box, Text } from "@chakra-ui/react";
-import { useContext } from "react";
+import { toaster } from "evergreen-ui";
+import { useContext, useEffect } from "react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { brandLogo } from "../../assets/svgs/svg";
@@ -9,14 +10,28 @@ import UserContext from "../../context/User";
 
 const ManufacturerLoginTemp = () => {
   const [brandName, setBrandName] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const user = useContext(UserContext);
 
+  console.log(user)
+  if (user.isManufacturer) {
+    navigate("/manufacturer/home");
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await user.wallet.callMethod({ contractId: user.contractId, method: "register_manufacturer", args: { name: brandName } })
-    navigate('/manufacturer/home');
+    setIsLoading(true);
+    try {
+      await user.wallet.callMethod({ contractId: user.contractId, method: "register_manufacturer", args: { name: brandName } })
+      navigate('/manufacturer/home');
+      setIsLoading(false)
+    } catch (error) {
+      setIsLoading(false)
+      toaster.danger("An error occured")
+    }
   };
+
   return (
     <Box w="100%" mt="100px">
       <Box mx="auto">{brandLogo}</Box>
@@ -26,6 +41,7 @@ const ManufacturerLoginTemp = () => {
       <Box w="35%" mx="auto">
         {!user.isSignedIn && <Box my="30px">
           <CustomButton
+            onClick={() => user.wallet.signIn()}
             w="100%"
             bg="brand.white"
             color="brand.blue"
@@ -33,6 +49,7 @@ const ManufacturerLoginTemp = () => {
             hoverColor="brand.white"
             testid="on-close"
             border="1px solid #0368FF"
+
           >
             Connect Wallet First !
           </CustomButton>
@@ -47,6 +64,7 @@ const ManufacturerLoginTemp = () => {
               hoverBg="brand.primary"
               hoverColor="brand.white"
               testid="on-close"
+              isLoading={isLoading}
               disabled={!brandName}
             >
               Proceed

@@ -1,19 +1,23 @@
 import { Box, Text } from "@chakra-ui/react";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import CustomButton from "../../components/CustomButton/customButton";
 import TextInput from "../../components/TextInputs/TextInput";
 import { useNavigate } from "react-router-dom";
 import { toaster } from "evergreen-ui";
+import UserContext from "../../context/User";
 
 const StepTwoTemp = () => {
   const [code, setCode] = useState('');
   const navigate = useNavigate();
+  const user = useContext(UserContext);
 
   const handleClick = () => {
-    if (code === "B01AC06") {
-      navigate('/information/product-details');
-    } else {
+    try {
+      user.wallet.viewMethod({ contractId: user.contractId, method: "get_product", args: { name: code } })
+      navigate(`/information/product-details/${code}`);
+    } catch (err) {
       toaster.danger("Error occured, code not valid!");
+      console.log(err);
     }
   }
   return (
@@ -34,7 +38,7 @@ const StepTwoTemp = () => {
           onClick={handleClick}
           disabled={!code}
         >
-          Learn more
+          Get Info
         </CustomButton>
 
         <Box mt="100px">

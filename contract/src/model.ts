@@ -15,13 +15,15 @@ export class Manufacturer {
 export class Product {
     name: string;
     url: string;
+    description: string;
     manufacturer: string;
     items: string[];
 
-    constructor(name: string, url: string, manufacturer: string) {
+    constructor(name: string, description: string, url: string, manufacturer: string) {
         this.name = name;
         this.url = url;
         this.manufacturer = manufacturer;
+        this.description = description;
         this.items = [];
     }
 }

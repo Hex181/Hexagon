@@ -57,7 +57,7 @@ const LatestNews = () => {
         ))}
       </>
       } */}
-        {window.location.href != window.location.origin + '/manufacturer/home' &&
+        {window.location.pathname != '/manufacturer/home' &&
           <Flex alignItems="center" justifyContent="space-between" bg="brand.blue" mt="
         20px" p="20px">
             {user.isSignedIn && user.isManufacturer ?

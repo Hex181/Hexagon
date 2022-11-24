@@ -1,8 +1,9 @@
 import { Box, Flex, Text } from "@chakra-ui/react";
 import SideBar from "../components/NavBar/SideBar";
 import SearchInput from "../components/TextInputs/SearchInput";
-import { useContext, useEffect } from "react";
+import { useContext } from "react";
 import UserContext from "../context/User";
+import CustomButton from "../components/CustomButton/customButton";
 
 const DashboardContainer = ({ children }) => {
   const user = useContext(UserContext);
@@ -18,8 +19,8 @@ const DashboardContainer = ({ children }) => {
           <Flex alignItems="center">
             {
               user?.isSignedIn ?
-                <Text color="red" mr="50px" cursor="pointer" onClick={() => user.wallet.signOut()} >Disconnect {user.wallet.accountId}</Text> :
-                <Text color="brand.blue" mr="50px" cursor="pointer" onClick={() => user.wallet.signIn()}>Connect Wallet</Text>
+                <CustomButton color="red" mr="50px" cursor="pointer" onClick={() => user.wallet.signOut()} hoverBg="red" hoverColor="brand.white">Disconnect {user.wallet.accountId}</CustomButton> :
+                <CustomButton color="brand.white" bg="brand.blue" mr="50px" cursor="pointer" onClick={() => user.wallet.signIn()}>Connect Wallet</CustomButton>
             }
             <Text mr="10px">Mode</Text>
             <Box>

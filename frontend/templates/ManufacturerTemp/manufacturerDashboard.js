@@ -10,9 +10,8 @@ import { useContext, useEffect, useState } from "react";
 import DashboardIcon from "../../assets/icons/dashboard-icon.png";
 import CustomButton from "../../components/CustomButton/customButton";
 import AddItemModal from "../../components/Modal/addItemModal";
-import AddProdcutModal from "../../components/Modal/addProductModal";
+import AddProductModal from "../../components/Modal/addProductModal";
 import UserContext from "../../context/User";
-import { manProducts } from "../../utils/data";
 import LatestNews from "../LatestNews";
 
 const ManufacturerDashboardTemp = () => {
@@ -22,7 +21,6 @@ const ManufacturerDashboardTemp = () => {
   const user = useContext(UserContext);
 
   const getManufacturer = async () => {
-    console.log(user.wallet.accountId);
     const res = await user.wallet.viewMethod({ contractId: user.contractId, method: "get_manufacturer", args: { account_id: user.wallet.accountId } });
     return res;
   }
@@ -81,7 +79,7 @@ const ManufacturerDashboardTemp = () => {
               >
                 <Box>{item.icon}</Box>
                 <Text color="brand.dark" ml="10px">
-                  {item.name}
+                  {item}
                 </Text>
               </Flex>
             ))}
@@ -111,7 +109,7 @@ const ManufacturerDashboardTemp = () => {
         <LatestNews />
       </Box>
 
-      <AddProdcutModal
+      <AddProductModal
         isOpen={isOpen}
         onClose={onClose}
         header="Add Products "
@@ -122,7 +120,6 @@ const ManufacturerDashboardTemp = () => {
         isOpen={itemIsOpen}
         onClose={itemOnClose}
         header="Fill in Item Number"
-      // handleProceed={handleProceed}
       />
     </Flex>
   );
