@@ -13,7 +13,7 @@ class BonaFide {
     assert(name, "Name must be provided!");
     // Confirm account is not already registered
     const account_id = near.predecessorAccountId();
-    assert(!this._is_manufacturer(account_id), "Account already registerd!");
+    assert(!this.is_manufacturer(account_id), "Account already registerd!");
     // Register account
     this.manufacturers.set(near.predecessorAccountId(), new Manufacturer(name, account_id));
     near.log(`New manufacturer registered: ${name}`);
@@ -24,9 +24,9 @@ class BonaFide {
     assert(name && url, "Name and url must be provided!");
     //Confirm caller is a manufacturer
     const account_id = near.predecessorAccountId();
-    assert(this._is_manufacturer(account_id), "You're not a manufacturer!");
+    assert(this.is_manufacturer(account_id), "You're not a manufacturer!");
     // Confirm product does not already exist
-    assert(this.products.get(name).name == "", "Product exist!s");
+    assert(this.products.get(name) == null, "Product exist!s");
     // Create product
     const new_product = new Product(name, url, account_id);
     this.products.set(name, new_product);
@@ -42,9 +42,9 @@ class BonaFide {
     assert(name && url, "Name and url must be provided!");
     //Confirm caller is a manufacturer
     const account_id = near.predecessorAccountId();
-    assert(this._is_manufacturer(account_id), "You're not a manufacturer!");
+    assert(this.is_manufacturer(account_id), "You're not a manufacturer!");
     // Confirm product already exist
-    assert(this.products.get(name).name != "", "Product does nor exist!s");
+    assert(this.products.get(name) != null, "Product does not exist!s");
     // Create product
     const new_product = new Product(name, url, account_id);
     this.products.set(name, new_product);
@@ -55,9 +55,9 @@ class BonaFide {
   create_item({ hash, product }: { hash: string, product: string }): void {
     //Confirm caller is a manufacturer
     const account_id = near.predecessorAccountId();
-    assert(this._is_manufacturer(account_id), "You're not a manufacturer!");
+    assert(this.is_manufacturer(account_id), "You're not a manufacturer!");
     // Confirm item with the same code does not exist
-    assert(this.items.get(hash).hash == "", "An item with same code already exist!");
+    assert(this.items.get(hash) == null, "An item with same code already exist!");
     // Create item
     const new_item = new Item(hash, product);
     this.items.set(hash, new_item);
@@ -71,7 +71,7 @@ class BonaFide {
   is_duplicate({ code }: { code: string }): boolean {
     let is_dup = true;
     const hash = near.keccak256(code);
-    assert(this.items.get(hash).hash != "", "Invalid item code");
+    assert(this.items.get(hash) != null, "Invalid item code");
     if (this.items.get(hash).bought = false) {
       is_dup = false;
     }
@@ -87,10 +87,18 @@ class BonaFide {
     return codes;
   }
 
+  @view({})
+  hash_code({ codes }: { codes: string[] }): string[] {
+    const hashes = codes.map((code) => {
+      return near.keccak256(code)
+    });
+    return hashes;
+  }
+
   @view({}) // This method is read-only and can be called for free
   get_product({ name }: { name: string }): { name: string, url: string, manufacturer: string } {
     const product = this.products.get(name, { defaultValue: new Product("", "", "") });
-    assert(this.products.get(name).name != "", "Product does not exist!");
+    assert(this.products.get(name) != null, "Product does not exist!");
     return { name: product.name, url: product.url, manufacturer: product.manufacturer };
   }
 
@@ -105,10 +113,11 @@ class BonaFide {
   //   //   this.message = message;
   //   // }
 
-  _is_manufacturer(account_id: string): boolean {
+  @view({}) // This method is read-only and can be called for free
+  is_manufacturer(account_id: string): boolean {
     let is_manufacturer = false;
     const manufacturer = this.manufacturers.get(account_id, { defaultValue: new Manufacturer("", "") })
-    if (manufacturer.id != "") { is_manufacturer = true }
+    if (manufacturer != null) { is_manufacturer = true }
     return is_manufacturer;
   }
 }
