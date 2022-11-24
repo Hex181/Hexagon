@@ -38,6 +38,7 @@
     "@near-wallet-selector/sender": "^7.0.0",
     "@near-wallet-selector/wallet-connect": "^7.0.0",
     "axios": "^1.2.0",
+    "buffer": "^6.0.3",
     "evergreen-ui": "^6.13.1",
     "framer-motion": "^7.6.9",
     "near-api-js": "^0.44.2",
