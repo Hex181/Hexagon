@@ -6,23 +6,38 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import VerificationIcon from "../../assets/icons/verification-icon.png";
 import CustomButton from "../../components/CustomButton/customButton";
 import SuccessModal from "../../components/Modal/successModal";
 import TextInput from "../../components/TextInputs/TextInput";
 import LatestNews from "../LatestNews";
 import { toaster } from "evergreen-ui";
+import UserContext from "../../context/User";
 
 const VerificationTemp = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [code, setCode] = useState('');
+  const user = useContext(UserContext);
 
-  const handleClick = () => {
-    if (code === "62991117606") {
-      onOpen();
-    } else {
-      toaster.danger("Error occured, code not valid!");
+  const handleClick = async () => {
+    try {
+      const res = await user.wallet.viewMethod({ contractId: user.contractId, method: "is_authentic", args: { code } });
+      console.log(res);
+      if (res.is_valid) {
+        if (res.is_bougth == false) {
+          onOpen();
+        } else {
+          //Duplicate
+          //Open error modal
+        }
+      } else {
+        //Invalid code
+        //Open error modal
+      }
+    } catch (err) {
+      toaster.danger("Error occured!");
+      console.log(err);
     }
   }
 
@@ -98,23 +113,27 @@ const VerificationTemp = () => {
       <SuccessModal
         isOpen={isOpen}
         onClose={onClose}
-        message="Authetication Verified"
+        message="Item Valid"
         handleNoOnclick={() => onClose()}
       >
         <Text>
+          This product is valid a.
+        </Text>
+        {/* <Text>
           This product is valid.
         </Text>
-      <Box textAlign="left" mt="20px">
-      <Text fontWeight="600">Product Info</Text>
-        <Text>Product name: ASPIRIN</Text>
-        <Text>Product ID: 62991117606</Text>
-        <Text>Manufacturer: Bayer</Text>
-        <Text>Shelf life: 2 years</Text>
-        <Text>Date of first authorisation/renewal of the authorisation: 07/10/2016</Text>
-      </Box>
+        <Box textAlign="left" mt="20px">
+          <Text fontWeight="600">Product Info</Text>
+          <Text>Product name: ASPIRIN</Text>
+          <Text>Product ID: 62991117606</Text>
+          <Text>Manufacturer: Bayer</Text>
+          <Text>Shelf life: 2 years</Text>
+          <Text>Date of first authorisation/renewal of the authorisation: 07/10/2016</Text>
+        </Box> */}
       </SuccessModal>
+
+
     </Flex>
   );
 };
-
 export default VerificationTemp;

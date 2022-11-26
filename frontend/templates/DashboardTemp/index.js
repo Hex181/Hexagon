@@ -32,28 +32,6 @@ const DashboardTemp = () => {
                     </Box>
                 </SimpleGrid>
 
-                <Box mt="50px" bg="brand.white" p="40px">
-                    <Text color="brand.dark" fontSize="20px">Get information about your drugs</Text>
-                    <Text mt="10px">To get started, kindly choose any of the options below and follow the steps assigned to each options carefully.</Text>
-
-                    <SimpleGrid columns={2} gap="20px" mt="30px">
-                        <Box bg="#F3F6FB" p="40px 20px">
-                            <Text color="brand.blue">Get information by scan the product name</Text>
-
-                            <CustomButton bg="brand.blue" borderRadius="8px" mt="40px" href="/verification">
-                                <Text color="brand.white">Scan</Text>
-                            </CustomButton>
-                        </Box>
-                        <Box bg="#F3F6FB" p="40px 20px">
-                            <Text color="brand.blue">Get information by entering product name.</Text>
-                            <TextInput placeholder="Enter product name" type="text" value={productName} mt="40px" onChange={(e) => setProductName(e.target.value)} />
-                            <CustomButton bg="brand.blue" borderRadius="8px" mt="8px" onClick={() => getProduct()}>
-                                <Text color="brand.white">Get info</Text>
-                            </CustomButton>
-                        </Box>
-                    </SimpleGrid>
-                </Box>
-
                 <SimpleGrid columns={3} gap="30px" bg="brand.white" p="40px" mt="40px" borderRadius="8px">
                     {currentServices.map((item, index) => (
                         <Flex alignItems="center" bg="#F3F6FB" p="20px" borderRadius="8px" key={index}>

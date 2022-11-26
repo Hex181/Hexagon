@@ -1,5 +1,6 @@
 // Find all our documentation at https://docs.near.org
-import { NearBindgen, near, call, view, UnorderedMap } from 'near-sdk-js';
+import { NearBindgen, near, call, view, UnorderedMap, bytes } from 'near-sdk-js';
+import { keccak256 } from 'near-sdk-js/lib/api';
 import { Manufacturer, Product, Item } from "./model";
 
 @NearBindgen({})
@@ -39,7 +40,7 @@ class BonaFide {
 
   @call({})
   update_product({ name, description, url }: { name: string, description: string, url: string }): void {
-    assert(name && description && url, "Name and url must be provided!");
+    assert(name && description && url, "Name, description and url must be provided!");
     //Confirm caller is a manufacturer
     const account_id = near.predecessorAccountId();
     assert(this.is_manufacturer({ account_id }), "You're not a manufacturer!");
@@ -52,11 +53,17 @@ class BonaFide {
   }
 
   @call({})
-  create_item({ hashes, product }: { hashes: string[], product: string }): void {
-    assert(hashes && product, "hashes and product must be provided!");
-    //Confirm caller is a manufacturer
+  create_items({ codes, product }: { codes: string[], product: string }): void {
+    assert(codes && product, "codes and product must be provided!");
+    //Confirm caller is a manufacturer and product exist
     const account_id = near.predecessorAccountId();
     assert(this.is_manufacturer({ account_id }), "You're not a manufacturer!");
+    assert(this.products.get(product) != null, "Invalid product!");
+    // Hash codes
+    const hashes = codes.map((code) => {
+      return keccak256(code);
+    });
+    // Create items
     hashes.forEach((hash) => {
       // Confirm item with the same code does not exist
       assert(this.items.get(hash) == null, "An item with same code already exist!");
@@ -71,35 +78,33 @@ class BonaFide {
   }
 
   @call({})
-  is_authentic({ code }: { code: string }): boolean {
+  bought({ code }: { code: string }): void {
     assert(code, "code must be provided!");
     const hash = near.keccak256(code);
     const item = this.items.get(hash);
-    assert(item != null, "Invalid item code");
-    if (item.bought == false) {
-      item.bought = true;
-      this.items.set(hash, item);
-      return true;
+    assert(item != null, "Invalid code");
+    item.bought = true;
+    this.items.set(hash, item);
+  }
+
+  @view({})
+  is_authentic({ code }: { code: string }): { is_valid: boolean, is_bougth: boolean } {
+    assert(code, "code must be provided!");
+    const hash = near.keccak256(code);
+    const item = this.items.get(hash);
+    let is_valid = item ? true : false;
+    let is_bougth = true;
+    if (item && item.bought == false) {
+      is_bougth = false;
     }
-    return false;
+    return { is_valid, is_bougth }
   }
 
   @view({}) // This method is read-only and can be called for free
-  generate_codes({ amount }: { amount: number }): string[] {
-    if (!amount) { amount = 1 }
-    let codes: string[] = []
-    for (let i = 0; i < amount; i++) {
-      codes.push(generate_random_string());
-    }
-    return codes;
-  }
-
-  @view({}) // This method is read-only and can be called for free
-  get_product({ name }: { name: string }): { name: string, description: string, url: string, manufacturer: string } {
+  get_product({ name }: { name: string }): Product {
     assert(name, "product name must be provided!");
-    const product = this.products.get(name);
     assert(this.products.get(name) != null, "Product does not exist!");
-    return { name: product.name, description: product.description, url: product.url, manufacturer: product.manufacturer };
+    return this.products.get(name);
   }
 
   @view({}) // This method is read-only and can be called for free
@@ -117,17 +122,7 @@ class BonaFide {
     }
     return false;
   }
+
 }
 
 function assert(condition, message) { if (!condition) throw Error(message); }
-
-// Function that generated a random string of 8 letters
-function generate_random_string() {
-  let result = '';
-  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  const charactersLength = characters.length;
-  for (var i = 0; i < 8; i++) {
-    result += characters.charAt(Math.floor(Math.random() * charactersLength));
-  }
-  return result;
-}

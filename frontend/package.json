@@ -49,6 +49,7 @@
     "react-dom": "^18.1.0",
     "react-router-dom": "^6.4.3",
     "regenerator-runtime": "^0.13.9",
+    "short-unique-id": "^4.4.4",
     "web3.storage": "^4.4.0"
   },
   "resolutions": {

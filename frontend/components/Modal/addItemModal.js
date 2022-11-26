@@ -14,13 +14,15 @@ import {
   useDisclosure,
   Text,
 } from "@chakra-ui/react";
-import { useContext, useState } from "react";
+import keccak256 from "keccak256";
+import { useContext, useEffect, useState } from "react";
 import UserContext from "../../context/User";
 import CustomButton from "../CustomButton/customButton";
 import TextInput from "../TextInputs/TextInput";
+import ShortUniqueId from 'short-unique-id';
 
-useContext
-const AddItemModal = ({ isOpen, onClose, header }) => {
+
+const AddItemModal = ({ isOpen, onClose, header, products }) => {
   const {
     isOpen: isOpenCode,
     onOpen: onOpenCode,
@@ -29,30 +31,28 @@ const AddItemModal = ({ isOpen, onClose, header }) => {
 
   const [itemNumber, setItemNumber] = useState("");
   const [productName, setProductName] = useState("");
+  const [codes, setCodes] = useState([]);
+  const user = useContext(UserContext);
 
   const handleProceed = (e) => {
     e.preventDefault();
     console.log({ itemNumber, productName });
+    const uid = new ShortUniqueId({ length: 10 });
+    let codes = [];
+    for (let i = 0; i < itemNumber; i++) {
+      codes.push(uid())
+    }
+    // const codes = user.wallet.callMethod({ contractId: user.contractId, method: "create_items", args: { amount: itemNumber, product: productName } });
+    // const codes = ['hello', 'world', 'foo', 'bar', 'hello', 'world', 'foo', 'bar', 'hello', 'world', 'foo', 'bar', 'hello', 'world', 'foo', 'bar', 'hello', 'world', 'foo', 'bar', 'hello', 'world', 'foo', 'bar', 'hello', 'world', 'foo', 'bar', 'hello', 'world', 'foo', 'bar']
+    setCodes(codes);
     onClose();
     onOpenCode();
   };
 
-  const codes = [
-    {
-      name: "Paracetamol",
-      val: "123456"
-    },
-    {
-      name: "Ampiclox",
-      val: "1234533322"
-    },
-    {
-      name: "Flagyl",
-      val: "09233"
-    },
-  ];
+  const createItems = () => {
+    user.wallet.callMethod({ contractId: user.contractId, method: "create_items", args: { codes, product: productName } });
+  }
 
-  const productLists = ["Paracetamol", "Amoxylin"];
   return (
     <>
       <Modal isOpen={isOpen} onClose={onClose} size="xl">
@@ -82,7 +82,7 @@ const AddItemModal = ({ isOpen, onClose, header }) => {
                   value={productName}
                   onChange={(e) => setProductName(e.target.value)}
                 >
-                  {productLists.map((productList) => (
+                  {products?.map((productList) => (
                     <option value={productList} key={productList}>
                       {productList}
                     </option>
@@ -110,7 +110,7 @@ const AddItemModal = ({ isOpen, onClose, header }) => {
               color="brand.white"
               disabled={!itemNumber || !productName || itemNumber === "0"}
             >
-              Add Item
+              Add Items
             </CustomButton>
           </ModalFooter>
         </ModalContent>
@@ -119,31 +119,34 @@ const AddItemModal = ({ isOpen, onClose, header }) => {
       <Modal isOpen={isOpenCode} onClose={onCloseCode}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Display Manufacturer's Code</ModalHeader>
+          <ModalHeader>Newly generated codes:</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             {codes.map((code) => (
-              <TextInput
-                label={`${code.name} Code`}
-                type="number"
-                value={code.val}
-                isReadOnly
-                key={code.val}
-              />
+              // <TextInput
+              //   type="text"
+              //   value={code}
+              //   isReadOnly
+              //   key={code}
+              // />
+              <Text display='inline' m="16px" p="16px" mt="12px" whiteSpace="nowrap">{code}</Text>
             ))}
-            <Text fontSize="12px" mt="10px" color="brand.blue">
-              Note: Ensure to print this page and store safely.{" "}
+            <Text fontSize="12px" mt="10px" color="red">
+              Note: Print page first, then click on Create Items(Only then would these codes be valid).{" "}
             </Text>
           </ModalBody>
-
           <ModalFooter>
-            <Button mr={3} borderRadius="4rem" onClick={onCloseCode}>
-              Close
-            </Button>
             <CustomButton bg="brand.blue" color="brand.white" onClick={() => window.print()}>
               Print Page
             </CustomButton>
+            <CustomButton m="16px" bg="brand.blue" color="brand.white" onClick={() => createItems()}>
+              Create Items
+            </CustomButton>
+            <Button mr={3} borderRadius="4rem" onClick={onCloseCode}>
+              Close
+            </Button>
           </ModalFooter>
+
         </ModalContent>
       </Modal>
     </>

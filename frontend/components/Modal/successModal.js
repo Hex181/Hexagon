@@ -61,22 +61,9 @@ function SuccessModal({
                 hoverBg="brand.primary"
                 hoverColor="brand.white"
                 testid="on-close"
-                // href="/verification"
+              // href="/verification"
               >
-                Great !
-              </CustomButton>
-
-              <CustomButton
-                width="180px"
-                bg="white"
-                color="brand.blue"
-                onClick={handleNoOnclick}
-                hoverBg="brand.primary"
-                hoverColor="brand.blue"
-                testid="on-close"
-                href="#"
-              >
-                Test another product ?
+                Confirm Purchase
               </CustomButton>
             </Box>
           </Box>

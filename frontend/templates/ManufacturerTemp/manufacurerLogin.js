@@ -14,7 +14,6 @@ const ManufacturerLoginTemp = () => {
   const navigate = useNavigate();
   const user = useContext(UserContext);
 
-  console.log(user)
   if (user.isManufacturer) {
     navigate("/manufacturer/home");
   }
@@ -28,7 +27,8 @@ const ManufacturerLoginTemp = () => {
       setIsLoading(false)
     } catch (error) {
       setIsLoading(false)
-      toaster.danger("An error occured")
+      console.log(error);
+      // toaster.danger("An error occured");
     }
   };
 

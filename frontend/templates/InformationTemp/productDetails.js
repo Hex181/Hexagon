@@ -1,4 +1,5 @@
 import { Box, Flex, Text } from "@chakra-ui/react";
+import { Link } from "evergreen-ui";
 import { useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import UserContext from "../../context/User";
@@ -14,6 +15,7 @@ const ProductDetailsTemp = () => {
   const getProduct = async () => {
     try {
       const product = await user.wallet.viewMethod({ contractId: user.contractId, method: "get_product", args: { name: id } });
+      product.url = `https://${product.url}.ipfs.w3s.link`;
       setProduct(product)
       navigate(`/information/product-details/${id}`);
     } catch (err) {
@@ -25,6 +27,7 @@ const ProductDetailsTemp = () => {
   useEffect(() => {
     getProduct();
   }, []);
+
 
   return (
     <Flex w="100%">

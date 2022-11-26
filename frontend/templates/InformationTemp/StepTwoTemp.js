@@ -5,15 +5,16 @@ import TextInput from "../../components/TextInputs/TextInput";
 import { useNavigate } from "react-router-dom";
 import { toaster } from "evergreen-ui";
 import UserContext from "../../context/User";
+import { toaster } from "evergreen-ui";
 
 const StepTwoTemp = () => {
   const [code, setCode] = useState('');
   const navigate = useNavigate();
   const user = useContext(UserContext);
 
-  const handleClick = () => {
+  const handleClick = async () => {
     try {
-      user.wallet.viewMethod({ contractId: user.contractId, method: "get_product", args: { name: code } })
+      await user.wallet.viewMethod({ contractId: user.contractId, method: "get_product", args: { name: code } })
       navigate(`/information/product-details/${code}`);
     } catch (err) {
       toaster.danger("Error occured, code not valid!");
