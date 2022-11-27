@@ -8,14 +8,14 @@ import UserContext from "../../context/User";
 import { toaster } from "evergreen-ui";
 
 const StepTwoTemp = () => {
-  const [code, setCode] = useState('');
+  const [name, setName] = useState('');
   const navigate = useNavigate();
   const user = useContext(UserContext);
 
   const handleClick = async () => {
     try {
-      await user.wallet.viewMethod({ contractId: user.contractId, method: "get_product", args: { name: code } })
-      navigate(`/information/product-details/${code}`);
+      await user.wallet.viewMethod({ contractId: user.contractId, method: "get_product", args: { name } })
+      navigate(`/information/product-details/${name}`);
     } catch (err) {
       toaster.danger("Error occured, product name not valid!");
       console.log(err);
@@ -29,7 +29,7 @@ const StepTwoTemp = () => {
           To get started, kindly enter the name of the drug and follow the
           steps below.
         </Text>
-        <TextInput placeholder="Enter product code" value={code} onChange={(e) => setCode(e.target.value)} />
+        <TextInput placeholder="Enter product name" value={name} onChange={(e) => setName(e.target.value)} />
         <CustomButton
           color="brand.white"
           bg="brand.blue"
@@ -37,7 +37,7 @@ const StepTwoTemp = () => {
           mt="20px"
           mx="auto"
           onClick={handleClick}
-          disabled={!code}
+          disabled={!name}
         >
           Get Info
         </CustomButton>

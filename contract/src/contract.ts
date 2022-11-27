@@ -88,16 +88,16 @@ class BonaFide {
   }
 
   @view({})
-  is_authentic({ code }: { code: string }): { is_valid: boolean, is_bougth: boolean } {
+  is_authentic({ code }: { code: string }): { is_valid: boolean, is_bought: boolean } {
     assert(code, "code must be provided!");
     const hash = near.keccak256(code);
     const item = this.items.get(hash);
     let is_valid = item ? true : false;
-    let is_bougth = true;
+    let is_bought = true;
     if (item && item.bought == false) {
-      is_bougth = false;
+      is_bought = false;
     }
-    return { is_valid, is_bougth }
+    return { is_valid, is_bought }
   }
 
   @view({}) // This method is read-only and can be called for free
