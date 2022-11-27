@@ -1,4 +1,4 @@
-import { Box, Flex, Text } from "@chakra-ui/react";
+import { Box, Flex, Image, Text } from "@chakra-ui/react";
 import { Link } from "evergreen-ui";
 import { useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -15,7 +15,8 @@ const ProductDetailsTemp = () => {
   const getProduct = async () => {
     try {
       const product = await user.wallet.viewMethod({ contractId: user.contractId, method: "get_product", args: { name: id } });
-      product.url = `https://${product.url}.ipfs.w3s.link`;
+      product.image = `https://${product.url}.ipfs.w3s.link/image.png`;
+      product.file = `https://${product.url}.ipfs.w3s.link/file.pdf`;
       setProduct(product)
       navigate(`/information/product-details/${id}`);
     } catch (err) {
@@ -28,24 +29,24 @@ const ProductDetailsTemp = () => {
     getProduct();
   }, []);
 
-
   return (
-    <Flex w="100%">
-      <Box w="70%">
+    <Flex w="100%" display={{ base: 'block', lg: 'flex' }}>
+      <Box w={{ base: "100%", lg: "70%" }}>
         <Box bg="brand.white" p="40px" color="#3A3A3ABF">
           <Text color="brand.dark" fontWeight="600" fontSize="20px">
             Name: {product?.name}
           </Text>
+          <Image src={product?.image} m="32px auto" max-width="90%" />
           <Text mt="10px">
             {product?.description}
           </Text>
-          <Text mt="30px">
-            Read more: {product?.url}
+          <Text mt="30px" color="brand.blue" >
+            <a href={product?.file}>Read more</a>
           </Text>
         </Box>
       </Box>
 
-      <Box w="30%" ml="20px">
+      <Box w={{ base: '100%', lg: "30%" }} ml={{ base: '0', lg: "20px" }}>
         <LatestNews />
       </Box>
     </Flex>

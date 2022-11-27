@@ -14,25 +14,39 @@ import TextInput from "../../components/TextInputs/TextInput";
 import LatestNews from "../LatestNews";
 import { toaster } from "evergreen-ui";
 import UserContext from "../../context/User";
+import ErrorModal from "../../components/Modal/errorModal";
 
 const VerificationTemp = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { isOpen: isErrorIsOpen, onOpen: isErrorOnOpen, onClose: isErrorOnClose } = useDisclosure();
   const [code, setCode] = useState('');
   const user = useContext(UserContext);
+  const [isValid, setIsValid] = useState(false);
+
+  const bought = async () => {
+    try {
+      const res = await user.wallet.callMethod({ contractId: user.contractId, method: "bought", args: { code } });
+    } catch (err) {
+      console.log(err);
+      // toaster.danger("Error occured!");
+    }
+  }
 
   const handleClick = async () => {
     try {
       const res = await user.wallet.viewMethod({ contractId: user.contractId, method: "is_authentic", args: { code } });
-      console.log(res);
+      setIsValid(res.is_valid);
       if (res.is_valid) {
         if (res.is_bougth == false) {
           onOpen();
         } else {
           //Duplicate
+          isErrorOnOpen();
           //Open error modal
         }
       } else {
         //Invalid code
+        isErrorOnOpen();
         //Open error modal
       }
     } catch (err) {
@@ -43,14 +57,15 @@ const VerificationTemp = () => {
 
 
   return (
-    <Flex w="100%">
-      <Box w="70%">
+    <Flex w="100%" display={{ base: 'block', lg: 'flex' }}>
+      <Box w={{ base: '100%', lg: "70%" }}>
         <SimpleGrid
-          columns={2}
+          columns={{ base: 1, lg: 2 }}
           bg="brand.blue"
           alignItems="center"
           p="40px 20px"
           borderRadius="8px"
+          textAlign={{ base: "center", lg: 'left' }}
         >
           <Box>
             <Text color="brand.white" fontSize="28px">
@@ -62,7 +77,7 @@ const VerificationTemp = () => {
               interactive method.
             </Text>
           </Box>
-          <Box ml="40px">
+          <Box ml={{ base: '0', lg: "40px" }}>
             <Image src={VerificationIcon} alt="dahsboard-home-icon" />
           </Box>
         </SimpleGrid>
@@ -106,32 +121,32 @@ const VerificationTemp = () => {
         </Box>
       </Box>
 
-      <Box w="30%" ml="20px">
+      <Box w={{ base: '100%', lg: "30%" }} ml={{ base: '0', lg: "20px" }}>
         <LatestNews />
       </Box>
 
       <SuccessModal
         isOpen={isOpen}
         onClose={onClose}
-        message="Item Valid"
+        message="Valid"
+        onClick={bought}
         handleNoOnclick={() => onClose()}
       >
         <Text>
-          This product is valid a.
-        </Text>
-        {/* <Text>
           This product is valid.
         </Text>
-        <Box textAlign="left" mt="20px">
-          <Text fontWeight="600">Product Info</Text>
-          <Text>Product name: ASPIRIN</Text>
-          <Text>Product ID: 62991117606</Text>
-          <Text>Manufacturer: Bayer</Text>
-          <Text>Shelf life: 2 years</Text>
-          <Text>Date of first authorisation/renewal of the authorisation: 07/10/2016</Text>
-        </Box> */}
       </SuccessModal>
-
+      <ErrorModal
+        isOpen={isErrorIsOpen}
+        onClose={isErrorOnClose}
+        onClick={isErrorOnClose}
+        message="Not valid"
+        handleNoOnclick={() => isErrorOnClose()}
+      >
+        <Text>
+          {isValid ? "This product is a duplicate" : "This product is not valid"}
+        </Text>
+      </ErrorModal>
 
     </Flex>
   );

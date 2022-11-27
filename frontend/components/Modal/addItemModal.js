@@ -13,6 +13,8 @@ import {
   Select,
   useDisclosure,
   Text,
+  Flex,
+  SimpleGrid,
 } from "@chakra-ui/react";
 import keccak256 from "keccak256";
 import { useContext, useEffect, useState } from "react";
@@ -20,6 +22,7 @@ import UserContext from "../../context/User";
 import CustomButton from "../CustomButton/customButton";
 import TextInput from "../TextInputs/TextInput";
 import ShortUniqueId from 'short-unique-id';
+import { toaster } from "evergreen-ui";
 
 
 const AddItemModal = ({ isOpen, onClose, header, products }) => {
@@ -31,26 +34,39 @@ const AddItemModal = ({ isOpen, onClose, header, products }) => {
 
   const [itemNumber, setItemNumber] = useState("");
   const [productName, setProductName] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const [codes, setCodes] = useState([]);
   const user = useContext(UserContext);
 
   const handleProceed = (e) => {
     e.preventDefault();
-    console.log({ itemNumber, productName });
     const uid = new ShortUniqueId({ length: 10 });
     let codes = [];
     for (let i = 0; i < itemNumber; i++) {
       codes.push(uid())
     }
-    // const codes = user.wallet.callMethod({ contractId: user.contractId, method: "create_items", args: { amount: itemNumber, product: productName } });
-    // const codes = ['hello', 'world', 'foo', 'bar', 'hello', 'world', 'foo', 'bar', 'hello', 'world', 'foo', 'bar', 'hello', 'world', 'foo', 'bar', 'hello', 'world', 'foo', 'bar', 'hello', 'world', 'foo', 'bar', 'hello', 'world', 'foo', 'bar', 'hello', 'world', 'foo', 'bar']
     setCodes(codes);
     onClose();
     onOpenCode();
   };
 
-  const createItems = () => {
-    user.wallet.callMethod({ contractId: user.contractId, method: "create_items", args: { codes, product: productName } });
+  const createItems = async () => {
+    setIsLoading(true);
+    try {
+      await user.wallet.callMethod({ contractId: user.contractId, method: "create_items", args: { codes, product: productName } });
+      setIsLoading(false);
+      onCloseCode();
+      setTimeout(() => {
+        window.location.reload();
+      }, 3000);
+      setItemNumber('');
+      setProductName('');
+    } catch (error) {
+      // toaster.danger("Error occured");
+      console.log(error);
+      setIsLoading(false);
+      onCloseCode();
+    }
   }
 
   return (
@@ -80,7 +96,7 @@ const AddItemModal = ({ isOpen, onClose, header, products }) => {
                   fontSize="16px"
                   height="48px"
                   value={productName}
-                  onChange={(e) => setProductName(e.target.value)}
+                  onChange={(e) => { setProductName(e.target.value) }}
                 >
                   {products?.map((productList) => (
                     <option value={productList} key={productList}>
@@ -129,23 +145,26 @@ const AddItemModal = ({ isOpen, onClose, header, products }) => {
               //   isReadOnly
               //   key={code}
               // />
-              <Text display='inline' m="16px" p="16px" mt="12px" whiteSpace="nowrap">{code}</Text>
+              <Flex alignItems="center" justifyContent="space-between">
+                <Text>Code: </Text>
+                <Text display='inline' m="16px" p="16px" mt="12px" whiteSpace="nowrap" color="brand.blue">{code}</Text>
+              </Flex>
             ))}
             <Text fontSize="12px" mt="10px" color="red">
               Note: Print page first, then click on Create Items(Only then would these codes be valid).{" "}
             </Text>
           </ModalBody>
-          <ModalFooter>
-            <CustomButton bg="brand.blue" color="brand.white" onClick={() => window.print()}>
-              Print Page
-            </CustomButton>
-            <CustomButton m="16px" bg="brand.blue" color="brand.white" onClick={() => createItems()}>
-              Create Items
-            </CustomButton>
+          <SimpleGrid columns={{ base: 1, lg: 3 }} gap="20px" textAlign="center" my="20px" mx="10px">
             <Button mr={3} borderRadius="4rem" onClick={onCloseCode}>
               Close
             </Button>
-          </ModalFooter>
+            <CustomButton bg="brand.blue" color="brand.white" isLoading={isLoading} onClick={() => createItems()} >
+              Create Items
+            </CustomButton>
+            <CustomButton bg="brand.blue" color="brand.white" onClick={() => window.print()}>
+              Print Page
+            </CustomButton>
+          </SimpleGrid>
 
         </ModalContent>
       </Modal>

@@ -17,7 +17,7 @@ const StepTwoTemp = () => {
       await user.wallet.viewMethod({ contractId: user.contractId, method: "get_product", args: { name: code } })
       navigate(`/information/product-details/${code}`);
     } catch (err) {
-      toaster.danger("Error occured, code not valid!");
+      toaster.danger("Error occured, product name not valid!");
       console.log(err);
     }
   }
@@ -26,10 +26,10 @@ const StepTwoTemp = () => {
       <Box>
         <Text fontWeight="600">Get information about your drugs</Text>
         <Text mt="10px">
-          To get started, kindly enter the brand name of the drug and follow the
+          To get started, kindly enter the name of the drug and follow the
           steps below.
         </Text>
-        <TextInput placeholder="Enter unique code" value={code} onChange={(e) => setCode(e.target.value)} />
+        <TextInput placeholder="Enter product code" value={code} onChange={(e) => setCode(e.target.value)} />
         <CustomButton
           color="brand.white"
           bg="brand.blue"

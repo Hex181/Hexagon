@@ -38,13 +38,14 @@ const ManufacturerDashboardTemp = () => {
   }, []);
 
   return (
-    <Flex w="100%">
-      <Box w="70%">
+    <Flex w="100%" display={{ base: 'block', lg: 'flex' }}>
+      <Box w={{ base: '100%', lg: "70%" }}>
         <SimpleGrid
-          columns={2}
+          columns={{ base: 1, lg: 2 }}
           bg="brand.blue"
           alignItems="center"
           p="40px 20px"
+          textAlign={{ base: 'center', lg: 'left' }}
           borderRadius="8px"
         >
           <Box>
@@ -55,14 +56,14 @@ const ManufacturerDashboardTemp = () => {
               This is your dashboard where you can create new products and items
             </Text>
           </Box>
-          <Box ml="40px">
+          <Box ml={{ base: '0', lg: "40px"}}>
             <Image src={DashboardIcon} alt="dahsboard-home-icon" />
           </Box>
         </SimpleGrid>
 
         <Box bg="brand.white" p="40px" mt="40px" borderRadius="8px">
-          <Flex mb="20px" alignItems="center" justifyContent="space-between">
-            <Text cursor="pointer" _hover={{ color: "brand.blue" }}>
+          <Flex mb="20px" alignItems="center" justifyContent="space-between" display={{ base: 'block', lg: 'flex' }} textAlign={{ base: 'center', lg: 'left' }}>
+            <Text _hover={{ color: "brand.blue" }}>
               Your products
             </Text>
             <CustomButton
@@ -75,7 +76,7 @@ const ManufacturerDashboardTemp = () => {
               Create new product
             </CustomButton>
           </Flex>
-          <SimpleGrid columns={3} gap="30px">
+          <SimpleGrid columns={{ base: 1, lg: 3 }} gap="30px">
             {manufacturer?.products.map((p, index) => (
               <Flex
                 alignItems="center"
@@ -93,8 +94,8 @@ const ManufacturerDashboardTemp = () => {
           </SimpleGrid>
         </Box>
 
-        <Box mt="50px" bg="brand.white" p="40px">
-          <Flex mb="20px" alignItems="center" justifyContent="space-between">
+        <Box mt={{ base: '20px', lg: "50px"}} bg="brand.white" p="40px">
+          <Flex mb="20px" alignItems="center" justifyContent="space-between" display={{ base: 'block', lg: 'flex' }} textAlign={{ base: 'center', lg: 'left' }}>
             <Text color="brand.dark" fontSize="16px" mb="10px">
               Create new items
             </Text>
@@ -109,24 +110,26 @@ const ManufacturerDashboardTemp = () => {
               Create Items
             </CustomButton>
           </Flex>
-          {products.map((p, index) => (
-            <Flex
-              alignItems="center"
-              bg="#F3F6FB"
-              p="20px"
-              borderRadius="8px"
-              key={index}
-            >
-              <Box>{p.items?.length || 0}</Box>
-              <Text color="brand.dark" ml="10px">
-                {p.name}
-              </Text>
-            </Flex>
-          ))}
+          <SimpleGrid columns={{ base: 1, lg: 3 }} gap="30px">
+            {products.map((p, index) => (
+              <Flex
+                alignItems="center"
+                bg="#F3F6FB"
+                p="20px"
+                borderRadius="8px"
+                key={index}
+              >
+                <Box>{p.items?.length || 0}</Box>
+                <Text color="brand.dark" ml="10px">
+                  {p.name}
+                </Text>
+              </Flex>
+            ))}
+          </SimpleGrid>
         </Box>
       </Box>
 
-      <Box w="30%" ml="20px">
+      <Box w={{ base: '100%', lg: "30%"}} ml="20px">
         <LatestNews />
       </Box>
 

@@ -38,8 +38,8 @@ const ManufacturerLoginTemp = () => {
       <Text fontSize="25px" color="brand.blue" textAlign="center" mt="20px">
         Admin Registeration
       </Text>
-      <Box w="35%" mx="auto">
-        {!user.isSignedIn && <Box my="30px">
+      <Box w={{ base: '80%', lg: "35%"}} mx="auto">
+        <Box my="30px">
           <CustomButton
             onClick={() => user.wallet.signIn()}
             w="100%"
@@ -49,11 +49,10 @@ const ManufacturerLoginTemp = () => {
             hoverColor="brand.white"
             testid="on-close"
             border="1px solid #0368FF"
-
           >
-            Connect Wallet First !
+            {!user.isSignedIn ? 'Connect Wallet First !' : 'Connected !'}
           </CustomButton>
-        </Box>}
+        </Box>
         <form onSubmit={handleSubmit}>
           <TextInput placeholder="Enter your brand name" type="text" label="Brand Name" value={brandName} onChange={(e) => setBrandName(e.target.value)} />
           <Box mt="30px">
