@@ -49,7 +49,7 @@ const LatestNews = () => {
 
       {isLoading ? <Spinner my="20px" /> :
       <>
-        {news.splice(0, viewAll ? 10 : 4).map((res) => (
+        {news.splice(0, viewAll ? 10 : 3).map((res) => (
           <>
             <Flex justifyContent="space-evenly" fontSize="14px" mt="20px" key={res?.uuid}>
                 <Image src={res.image_url} w="70px" alt="news-img" objectFit="cover" />
